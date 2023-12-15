@@ -11,9 +11,10 @@ N_ROWS = [1000, 5000, 10000]
 
 DEBUG = False
 
-DATA_ANON_DIR = "/home/teamK/GreenLab/data/anonymized_training_data/" # or "student_data" or "adult_data"
-DATA_ORIG_DIR = "/home/teamK/GreenLab/data/original_training_data/"
-DATASET_NAME = "reduced_diabetes_binary" # "student" "adult"
+DATA_ANON_DIR = "/home/teamK/green-ml-anonymized/adult_data/anonymized_training_data/" # or "student_data" or "adult_data"
+DATA_ORIG_DIR = "/home/teamK/green-ml-anonymized/adult_data/original_training_data/"
+DATASET_NAME = "adult" #"student" #"reduced_diabetes_binary"
+ENERGIES_OUT = "adult_energy" #"student_energy" #"energy"
 
 counter = 0
 
@@ -51,7 +52,7 @@ for rep in MEASUREMENT_REPETITIONS:
 
             pyRAPL.setup()
             label = 'orig_1_RF_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
                 orig1_RF = RandomForestClassifier(n_estimators=n_trees, random_state=42)
                 orig1_RF.fit(X_orig_1, y_orig_1.values.ravel())
@@ -63,7 +64,7 @@ for rep in MEASUREMENT_REPETITIONS:
 
             pyRAPL.setup()
             label = label = 'orig_2_RF_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
                 orig2_RF = RandomForestClassifier(n_estimators=n_trees, random_state=42)
                 orig2_RF.fit(X_orig_2, y_orig_2.values.ravel())
@@ -75,7 +76,7 @@ for rep in MEASUREMENT_REPETITIONS:
 
             pyRAPL.setup()
             label = label = 'anon_1_RF_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
                 anon1_RF = RandomForestClassifier(n_estimators=n_trees, random_state=42)
                 anon1_RF.fit(X_anon_1, y_anon_1.values.ravel())
@@ -87,7 +88,7 @@ for rep in MEASUREMENT_REPETITIONS:
 
             pyRAPL.setup()
             label = label = 'anon_2_RF_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
                 anon2_RF = RandomForestClassifier(n_estimators=n_trees, random_state=42)
                 anon2_RF.fit(X_anon_2, y_anon_2.values.ravel())
@@ -104,7 +105,7 @@ for rep in MEASUREMENT_REPETITIONS:
 
             pyRAPL.setup()
             label = label = 'orig_1_KNN_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
                 orig1_kNN = KNeighborsClassifier(n_neighbors=k, algorithm='ball_tree')
                 orig1_kNN.fit(X_orig_1, y_orig_1.values.ravel())
@@ -116,7 +117,7 @@ for rep in MEASUREMENT_REPETITIONS:
 
             pyRAPL.setup()
             label = label = 'orig_2_KNN_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
                 orig2_kNN = KNeighborsClassifier(n_neighbors=k, algorithm='ball_tree')
                 orig2_kNN.fit(X_orig_2, y_orig_2.values.ravel())
@@ -128,7 +129,7 @@ for rep in MEASUREMENT_REPETITIONS:
 
             pyRAPL.setup()
             label = label = 'anon_1_KNN_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
                 anon1_kNN = KNeighborsClassifier(n_neighbors=k, algorithm='ball_tree')
                 anon1_kNN.fit(X_anon_1, y_anon_1.values.ravel())
@@ -140,7 +141,7 @@ for rep in MEASUREMENT_REPETITIONS:
 
             pyRAPL.setup()
             label = label = 'anon_2_KNN_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
                 anon2_kNN = KNeighborsClassifier(n_neighbors=k, algorithm='ball_tree')
                 anon2_kNN.fit(X_anon_2, y_anon_2.values.ravel())
@@ -155,12 +156,13 @@ for rep in MEASUREMENT_REPETITIONS:
             # Hyperparams
             # You may need to set appropriate values for the logistic regression hyperparameters like regularization (C) etc.
             C_value = 1.0
+            log_iters = 5000
 
             pyRAPL.setup()
             label = 'orig_1_Logistic_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
-                orig1_logistic = LogisticRegression(C=C_value)
+                orig1_logistic = LogisticRegression(C=C_value, max_iter=log_iters, multi_class='multinomial')
                 orig1_logistic.fit(X_orig_1, y_orig_1.values.ravel())
             csv_output.save()
 
@@ -170,9 +172,9 @@ for rep in MEASUREMENT_REPETITIONS:
 
             pyRAPL.setup()
             label = 'orig_2_Logistic_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
-                orig2_logistic = LogisticRegression(C=C_value)
+                orig2_logistic = LogisticRegression(C=C_value, max_iter=log_iters, multi_class='multinomial')
                 orig2_logistic.fit(X_orig_2, y_orig_2.values.ravel())
             csv_output.save()
 
@@ -182,9 +184,9 @@ for rep in MEASUREMENT_REPETITIONS:
 
             pyRAPL.setup()
             label = 'anon_1_Logistic_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
-                anon1_logistic = LogisticRegression(C=C_value)
+                anon1_logistic = LogisticRegression(C=C_value, max_iter=log_iters, multi_class='multinomial')
                 anon1_logistic.fit(X_anon_1, y_anon_1.values.ravel())
             csv_output.save()
 
@@ -194,9 +196,9 @@ for rep in MEASUREMENT_REPETITIONS:
 
             pyRAPL.setup()
             label = 'anon_2_Logistic_' + folder + "_" + str(rep) + "_"
-            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+            csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
             with pyRAPL.Measurement(label, output=csv_output):
-                anon2_logistic = LogisticRegression(C=C_value)
+                anon2_logistic = LogisticRegression(C=C_value, max_iter=log_iters, multi_class='multinomial')
                 anon2_logistic.fit(X_anon_2, y_anon_2.values.ravel())
             csv_output.save()            
 
@@ -214,7 +216,7 @@ if DEBUG:
 for rep in MEASUREMENT_REPETITIONS:
     pyRAPL.setup()
     label = label = "idle_" + str(rep) + "_"
-    csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/GreenLab/code/energy/'+label+".csv")
+    csv_output = pyRAPL.outputs.CSVOutput('/home/teamK/green-ml-anonymized/code/'+ENERGIES_OUT+'/'+label+".csv")
     with pyRAPL.Measurement(label, output=csv_output):
         time.sleep(30)
     csv_output.save()
