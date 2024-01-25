@@ -12,47 +12,29 @@ library('rstatix')
 library('ARTool')
 library('rcompanion')
 library('effectsize')
+library('ggplot2')
 ```
 
 
 ```{r}
-#data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_data/delta/delta-adult-knn.csv")
-#data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_data/delta/delta-adult-lr.csv")
-#data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_data/delta/delta-adult-rf.csv")
-
-#data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_data/delta/delta-energy-knn.csv")
-#data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_data/delta/delta-energy-lr.csv")
-#data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_data/delta/delta-energy-rf.csv")
-
-#data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_data/delta/delta-student-knn.csv")
-#data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_data/delta/delta-student-lr.csv")
-data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_data/delta/delta-student-rf.csv")
+data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_rq1_rq3/rq3-data.csv")
 
 head(data_frame)
 ```
 
 ```{r}
 data_frame %>%
-  group_by(rows, features) %>%
+  group_by(dataset, features) %>%
   get_summary_stats(joules, type = "full")
 ```
 
 ```{r}
-#bxp <- ggboxplot(
-#  data_frame, x = "dataset", y = "joules",
-#  color = "rows", palette = "jco",
-#  facet.by = "features", short.panel.labs = FALSE
-#  )
-#bxp
-```
-
-```{r}
 data_frame %>%
-  group_by(features, rows) %>%
+  group_by(dataset, features) %>%
   identify_outliers(joules)
 
 df_outliers <- data_frame %>% 
-  group_by(features, rows) %>% 
+  group_by(dataset, features) %>% 
   identify_outliers(joules)
 
 data_frame <- data_frame %>% 
@@ -60,93 +42,36 @@ data_frame <- data_frame %>%
 ```
 
 ```{r}
-data_frame %>%
-  group_by(features, rows) %>%
-  shapiro_test(joules)
-```
-
-```{r}
-#ggqqplot(data_frame, "joules", ggtheme = theme_bw()) +
-#  facet_grid(features + dataset ~ rows, labeller = "label_both")
-```
-
-```{r}
-data_frame %>%
-  group_by(features) %>%
-  levene_test(joules ~ rows)
-```
-
-```{r}
-data_frame %>%
-  group_by(rows) %>%
-  levene_test(joules ~ features)
-```
-
-```{r}
-#res.aov <- anova_test(
-#  data = data_frame, dv = joules, wid = id,
-#  between = dataset, within = c(features, rows)
-#  )
-#get_anova_table(res.aov)
-```
-
-```{r}
-res.aov <- aov(joules ~ features + rows, data = data_frame)
-summary(res.aov)
-```
-
-```{r}
-cohens_f(res.aov)
-```
-
-```{r}
-m <- art(joules ~ factor(features) * factor(rows), data=data_frame)
-anova(m)
-```
-
-```{r}
-#library('effsize')
-#cohen.d(joules, d=data_frame)
-```
-
-```{r}
-#efsize_df <- rstatix::kruskal_effsize(joules ~ exp, data=data_frame)
-#efsize_df
-
-#data_frame %>%
-#  group_by(features, dataset, rows) %>%
-#  kruskal_effsize(joules ~ data_frame)
-```
-
-```{r}
-ggplot(data_frame, aes(x = exp, y = joules)) + stat_summary(fun = mean, geom = "bar") + coord_flip()
-```
-
-```{r}
-ggplot(data_frame, aes(x = joules, fill = exp)) + geom_density(alpha = 0.5)
-```
-
-```{r, fig.height=12}
-violin <- ggplot(data_frame, aes(x=exp, y=joules, fill=exp)) +
-          geom_violin(trim=FALSE, alpha = 0.8) + # alpha for the opacity
-          geom_boxplot(width=0.2, fill="white", outlier.size = 0.2) +
-          stat_summary(fun = mean, geom = "point", shape = 1, size = 2) +
-          labs(title="Violin Plot with Inner Boxplot",
-          x="exp",
-          y="joules") + coord_flip()
-violin
-```
-
-
-```{r}
 data_frame$features <- factor(data_frame$features)
-data_frame$rows <- factor(data_frame$rows)
+data_frame$algorithm <- factor(data_frame$algorithm)
+data_frame$dataset <- factor(data_frame$dataset)
 
-model_energy_usage <- art(joules ~ features * rows, data = data_frame)
-anova(art(joules ~ features * rows, data = data_frame))
+# repeated measures:
+#model_energy_usage <- art(joules ~ Error(exp/(algorithm * features) + dataset), data = data_frame)
+
+# simpler case:
+model_energy_usage <- art(joules ~ dataset*features, data = data_frame)
+anova(art(joules ~ dataset*features, data = data_frame))
+art.con(model_energy_usage, "dataset")
 art.con(model_energy_usage, "features")
-art.con(model_energy_usage, "rows")
-art.con(model_energy_usage, "features:rows", adjust = "none")
+art.con(model_energy_usage, "dataset:features", adjust = "none")
 ```
 
+```{r}
+# box plot
+
+# Example data
+# D <- data.frame(
+#   i = factor(rep(1:5, each = 20)), # subject identifiers
+#   j = rnorm(100) # values of interest
+# )
+
+ggplot(D, aes(x = i, y = j)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of j for each subject", x = "Subject", y = "Values of j")
+
+#alternative plot graphics
+#boxplot(j ~ i, data = D, main = "Boxplot of j for each subject", xlab = "Subject", ylab = "Values of j")
+
+```
 
