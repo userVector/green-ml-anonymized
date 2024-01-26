@@ -23,6 +23,24 @@ head(data_frame)
 ```
 
 ```{r}
+data_frame <- subset(data_frame, id != 616)
+
+data_frame %>%
+  group_by(dataset) %>%
+  get_summary_stats(joules, type = "full")
+```
+
+```{r}
+# boxplot without outliers
+ggplot(data_frame, aes(x = joules, y = dataset)) +
+  #geom_boxplot() +
+  geom_boxplot(outlier.shape = NA, outlier.colour = NA) +
+  theme_minimal() +
+  coord_cartesian(xlim = c(0, 1500)) +
+  labs(title = "Energy consumption in all experiments", x = "energy consumption in joules", y = "") # +
+```
+
+```{r}
 data_frame %>%
   group_by(dataset) %>%
   identify_outliers(joules)

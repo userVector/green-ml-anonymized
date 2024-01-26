@@ -17,16 +17,31 @@ library('ggplot2')
 
 
 ```{r}
-data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_rq1_rq3/rq3-data.csv")
+data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/new_rq1_rq3/rq3-data-rf.csv")
 
 head(data_frame)
 ```
 
 ```{r}
+data_frame <- subset(data_frame, id != 184)
+
 data_frame %>%
   group_by(dataset, features) %>%
   get_summary_stats(joules, type = "full")
 ```
+
+```{r}
+# Create a box plot
+
+#custom_order <- c(1,10,2,11,3,12,4,13,5,14,6,15,7,16,8,17,9,18)
+#data_frame$exp <- factor(data_frame$exp, levels = custom_order)
+
+ggplot(data_frame, aes(x = joules, y = exp)) +
+  geom_boxplot() +
+  theme_minimal() +
+  labs(title = "Energy consumption in RF experiments", x = "energy consumption in joules", y = "") # +
+```
+
 
 ```{r}
 data_frame %>%
@@ -43,35 +58,15 @@ data_frame <- data_frame %>%
 
 ```{r}
 data_frame$features <- factor(data_frame$features)
-data_frame$algorithm <- factor(data_frame$algorithm)
 data_frame$dataset <- factor(data_frame$dataset)
+data_frame$exp <- factor(data_frame$exp)
 
-# repeated measures:
-#model_energy_usage <- art(joules ~ Error(exp/(algorithm * features) + dataset), data = data_frame)
+model_energy_usage <- art(joules ~ dataset * features, data = data_frame)
+anova(art(joules ~ dataset * features, data = data_frame))
 
 # simpler case:
-model_energy_usage <- art(joules ~ dataset*features, data = data_frame)
-anova(art(joules ~ dataset*features, data = data_frame))
 art.con(model_energy_usage, "dataset")
 art.con(model_energy_usage, "features")
 art.con(model_energy_usage, "dataset:features", adjust = "none")
-```
-
-```{r}
-# box plot
-
-# Example data
-# D <- data.frame(
-#   i = factor(rep(1:5, each = 20)), # subject identifiers
-#   j = rnorm(100) # values of interest
-# )
-
-ggplot(D, aes(x = i, y = j)) +
-  geom_boxplot() +
-  labs(title = "Boxplot of j for each subject", x = "Subject", y = "Values of j")
-
-#alternative plot graphics
-#boxplot(j ~ i, data = D, main = "Boxplot of j for each subject", xlab = "Subject", ylab = "Values of j")
-
 ```
 
