@@ -1,0 +1,92 @@
+---
+title: "gl-anova"
+output: html_document
+date: "2023-10-23"
+---
+
+
+```{r}
+library('tidyverse')
+library('ggpubr')
+library('rstatix')
+library('ARTool')
+library('rcompanion')
+library('effectsize')
+library('ggplot2')
+```
+
+
+```{r}
+data_frame <- read.csv("C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/latest_rq1_rq2/data-knn.csv")
+
+head(data_frame)
+```
+
+```{r}
+data_frame %>%
+  group_by(dataset, features) %>%
+  get_summary_stats(joules, type = "full")
+```
+
+```{r}
+# Create a box plot
+
+#custom_order <- c(1,10,2,11,3,12,4,13,5,14,6,15,7,16,8,17,9,18)
+#data_frame$exp <- factor(data_frame$exp, levels = custom_order)
+
+#for plotting RF data
+#data_frame <- subset(data_frame, id != 184)
+
+data_frame$dataset <- sub("orig", "original data", data_frame$dataset)
+data_frame$dataset <- sub("anon", "anonymized data", data_frame$dataset)
+
+# this creates a boxplot with anon vs orig
+ggplot(data_frame, aes(x = joules, y = dataset, group = dataset)) +
+  #geom_boxplot() +
+  geom_boxplot(outlier.shape = NA, outlier.colour = NA) +
+  coord_cartesian(xlim = c(0, 4.5)) +
+  theme_minimal() +
+  labs(title = "Energy consumption in KNN experiments", x = "energy consumption in joules", y = "")
+```
+
+```{r}
+data_frame$features <- sub("10f", " 10 features", data_frame$features)
+data_frame$features <- sub("15f", " 15 features", data_frame$features)
+data_frame$features <- sub("20f", " 20 features", data_frame$features)
+
+# this creates a boxplot for interaction(dataset, features)
+ggplot(data_frame, aes(x = joules, y = interaction(dataset, features), group = interaction(dataset, features))) +
+  #geom_boxplot() +
+  geom_boxplot(outlier.shape = NA, outlier.colour = NA) +
+  coord_cartesian(xlim = c(0, 4.5)) +
+  theme_minimal() +
+  labs(title = "Energy consumption in KNN experiments", x = "energy consumption in joules", y = "")
+```
+
+```{r}
+data_frame %>%
+  group_by(dataset, features) %>%
+  identify_outliers(joules)
+
+df_outliers <- data_frame %>% 
+  group_by(dataset, features) %>% 
+  identify_outliers(joules)
+
+data_frame <- data_frame %>% 
+  anti_join(df_outliers, by = "id")
+```
+
+```{r}
+data_frame$features <- factor(data_frame$features)
+data_frame$dataset <- factor(data_frame$dataset)
+data_frame$exp <- factor(data_frame$exp)
+
+model_energy_usage <- art(joules ~ dataset * features, data = data_frame)
+anova(art(joules ~ dataset * features, data = data_frame))
+
+# simpler case:
+art.con(model_energy_usage, "dataset")
+art.con(model_energy_usage, "features")
+art.con(model_energy_usage, "dataset:features", adjust = "none")
+```
+
