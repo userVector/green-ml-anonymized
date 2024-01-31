@@ -25,7 +25,14 @@ head(data_frame)
 ```{r}
 data_frame %>%
   group_by(dataset, features) %>%
-  get_summary_stats(joules, type = "full")
+  identify_outliers(joules)
+
+df_outliers <- data_frame %>% 
+  group_by(dataset, features) %>% 
+  identify_outliers(joules)
+
+data_frame <- data_frame %>% 
+  anti_join(df_outliers, by = "id")
 ```
 
 ```{r}
@@ -64,16 +71,17 @@ ggplot(data_frame, aes(x = joules, y = interaction(dataset, features), group = i
 ```
 
 ```{r}
+# by original vs anonymized
+data_frame %>%
+  group_by(dataset) %>%
+  get_summary_stats(joules, show = c("n", "mean", "sd", "se", "median", "min", "max"))
+```
+
+```{r}
+# by original vs anonymized and features
 data_frame %>%
   group_by(dataset, features) %>%
-  identify_outliers(joules)
-
-df_outliers <- data_frame %>% 
-  group_by(dataset, features) %>% 
-  identify_outliers(joules)
-
-data_frame <- data_frame %>% 
-  anti_join(df_outliers, by = "id")
+  get_summary_stats(joules, show = c("n", "mean", "sd", "se", "median", "min", "max"))
 ```
 
 ```{r}
@@ -84,9 +92,7 @@ data_frame$exp <- factor(data_frame$exp)
 model_energy_usage <- art(joules ~ dataset * features, data = data_frame)
 anova(art(joules ~ dataset * features, data = data_frame))
 
-# simpler case:
 art.con(model_energy_usage, "dataset")
 art.con(model_energy_usage, "features")
 art.con(model_energy_usage, "dataset:features", adjust = "none")
 ```
-
