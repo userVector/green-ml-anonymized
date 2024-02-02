@@ -13,6 +13,8 @@ library('ARTool')
 library('rcompanion')
 library('effectsize')
 library('ggplot2')
+library('effsize')
+library('lsr')
 ```
 
 
@@ -95,4 +97,25 @@ anova(art(joules ~ dataset * features, data = data_frame))
 art.con(model_energy_usage, "dataset")
 art.con(model_energy_usage, "features")
 art.con(model_energy_usage, "dataset:features", adjust = "none")
+```
+
+```{r}
+# Calculate Cliff's delta for the main effects
+delta_dataset <- cliff.delta(joules ~ dataset, data = data_frame)
+delta_features <- cliff.delta(joules ~ features, data = data_frame)
+
+# Convert joules to numeric if needed
+joules <- as.numeric(data_frame$joules)
+
+# Extract interaction term from the model
+interaction_term <- model_energy_usage$coefficients["dataset:features"]
+
+# Calculate Cliff's delta for the interaction using raw data
+delta_interaction <- cliff.delta(joules[data_frame$dataset == levels(data_frame$dataset)[1] & data_frame$features == levels(data_frame$features)[1]],
+                                joules[data_frame$dataset == levels(data_frame$dataset)[1] & data_frame$features == levels(data_frame$features)[2]])
+
+# Display Cliff's delta for the main effects and interaction
+cat("Cliff's Delta for Dataset:", delta_dataset$estimate, "\n")
+cat("Cliff's Delta for Features:", delta_features$estimate, "\n")
+cat("Cliff's Delta for Dataset:Features Interaction:", delta_interaction$estimate, "\n")
 ```

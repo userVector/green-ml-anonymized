@@ -387,7 +387,10 @@ library(&#39;effectsize&#39;)</code></pre>
 ## The following objects are masked from &#39;package:rstatix&#39;:
 ## 
 ##     cohens_d, eta_squared</code></pre>
-<pre class="r"><code>library(&#39;ggplot2&#39;)</code></pre>
+<pre class="r"><code>library(&#39;ggplot2&#39;)
+library(&#39;effsize&#39;)
+library(&#39;lsr&#39;)</code></pre>
+<pre><code>## Warning: package &#39;lsr&#39; was built under R version 4.3.2</code></pre>
 <pre class="r"><code>data_frame &lt;- read.csv(&quot;C:/Users/Vit/Desktop/gl-paper/green-ml-anonymized/new_analysis/latest_rq1_rq2/data-knn.csv&quot;)
 
 head(data_frame)</code></pre>
@@ -540,6 +543,27 @@ anova(art(joules ~ dataset * features, data = data_frame))</code></pre>
 ##   -0.974  0.3309
 ##   -2.343  0.0199
 ##   -1.360  0.1751</code></pre>
+<pre class="r"><code># Calculate Cliff&#39;s delta for the main effects
+delta_dataset &lt;- cliff.delta(joules ~ dataset, data = data_frame)
+delta_features &lt;- cliff.delta(joules ~ features, data = data_frame)
+
+# Convert joules to numeric if needed
+joules &lt;- as.numeric(data_frame$joules)
+
+# Extract interaction term from the model
+interaction_term &lt;- model_energy_usage$coefficients[&quot;dataset:features&quot;]
+
+# Calculate Cliff&#39;s delta for the interaction using raw data
+delta_interaction &lt;- cliff.delta(joules[data_frame$dataset == levels(data_frame$dataset)[1] &amp; data_frame$features == levels(data_frame$features)[1]],
+                                joules[data_frame$dataset == levels(data_frame$dataset)[1] &amp; data_frame$features == levels(data_frame$features)[2]])
+
+# Display Cliff&#39;s delta for the main effects and interaction
+cat(&quot;Cliff&#39;s Delta for Dataset:&quot;, delta_dataset$estimate, &quot;\n&quot;)</code></pre>
+<pre><code>## Cliff&#39;s Delta for Dataset: 0.1036478</code></pre>
+<pre class="r"><code>cat(&quot;Cliff&#39;s Delta for Features:&quot;, delta_features$estimate, &quot;\n&quot;)</code></pre>
+<pre><code>## Cliff&#39;s Delta for Features: -0.2027778</code></pre>
+<pre class="r"><code>cat(&quot;Cliff&#39;s Delta for Dataset:Features Interaction:&quot;, delta_interaction$estimate, &quot;\n&quot;)</code></pre>
+<pre><code>## Cliff&#39;s Delta for Dataset:Features Interaction: -0.2335069</code></pre>
 
 
 
